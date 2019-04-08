@@ -1,0 +1,41 @@
+version: '3.1'
+services:
+  # database container - actency images
+  db:
+    # actency/docker-mysql available tags: latest, 5.7, 5.6, 5.5
+    image: actency/docker-mysql:5.7
+    # container_name: boilerplate_db
+    ports:
+      - "3306:3306"
+    env_file:
+      - ../build/env
+  # actency/docker-apache-php available tags: latest, 7.1, 7.0, 5.6, 5.5, 5.4, 5.3
+  web:
+    image: actency/docker-apache-php:7.1
+    # container_name: boilerplate_web
+    ports:
+      - "3000:80"
+      - "2222:22"
+    links:
+      - db:mysql
+    build:
+      context: ../docker/
+      dockerfile: docker.web
+    volumes:
+      - ../www:/var/www
+      - ../log:/var/debug
+      # - ../www/public:/var/www/html
+      - ../build/php.ini:/usr/local/etc/php/php.ini
+      - ../build/apache2.conf:/usr/apache2/apache2.conf
+    tty: true
+
+  # phpmyadmin container - actency images
+  phpmyadmin:
+    image: actency/docker-phpmyadmin
+    # container_name: boilerplate_phpmyadmin
+    ports:
+      - "8000:80"
+    env_file:
+      - ../build/env
+    links:
+      - db:mysql

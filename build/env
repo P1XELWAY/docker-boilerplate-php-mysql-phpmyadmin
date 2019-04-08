@@ -1,0 +1,5 @@
+MYSQL_ROOT_PASSWORD=root
+MYSQL_DATABASE=boilerplate
+MYSQL_USER=boilerplate
+MYSQL_PASSWORD=boilerplate
+UPLOAD_SIZE=1G

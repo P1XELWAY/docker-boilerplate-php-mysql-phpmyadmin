@@ -1,0 +1,28 @@
+FROM php:7.1-apache
+
+RUN a2enmod rewrite
+
+RUN apt-get update 
+RUN apt-get install -y nmap telnet zlib1g-dev
+
+RUN docker-php-ext-install mysqli mysqli pdo pdo_mysql zip
+
+RUN yes | pecl install xdebug
+
+RUN service apache2 restart
+
+RUN apt-get update && apt-get install -y openssh-server
+RUN mkdir -p /var/run/sshd
+
+ADD id_rsa.pub /var/id_rsa.pub
+RUN chmod 777 /var/id_rsa.pub
+
+RUN mkdir ~/.ssh
+RUN cat /var/id_rsa.pub >> ~/.ssh/authorized_keys
+RUN rm /var/id_rsa.pub
+
+RUN service ssh start
+
+EXPOSE 80 443 22
+
+ENTRYPOINT service ssh start && service apache2 start && bash
